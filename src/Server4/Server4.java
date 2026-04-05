@@ -80,7 +80,7 @@ public class Server4 {
                     MESSAGE = message;
                     String jeton;
                     
-                    Server4.log("Thông tin nhận được :\n" + "start: " + st + "\n" + "jeton: " + je + "\n"
+                    Server4.log("Thông nhận được :\n" + "start: " + st + "\n" + "jeton: " + je + "\n"
                             + "lamport: " + lamport + "\n" + "servername: " + name + "\n"
                             + "type: " + type + "\n" + "action: " + action + "\n" + "vòng đk: " + circle + "\n"
                             + "thông điệp: " + message + "\n");
@@ -375,6 +375,13 @@ public class Server4 {
                             if (tam < 0) {
                                 tam = 2;
                             }
+                            if (t.charAt(tam) == '0') {
+                                Server4.log("\nServer" + (tam + 1) + " bị sự cố do jeton nhận được là: " + t + ".\n\n");
+                                tam--;
+                            }
+                            if (tam < 0) {
+                                tam = 2;
+                            }
                             Connect co = new Connect(rount.table[tam].destination, rount.table[tam].port,
                                     rount.table[tam].name);
                             co.connect();
@@ -419,18 +426,24 @@ public class Server4 {
                     
                     ProcessData data = new ProcessData(MESSAGE);
                     Database db = new Database();
+
+                    // ====================================================
+                    // SỬA LỖI: Tách điều kiện SET và DEL riêng biệt
+                    // querySQL trả về true = ghế trống, false = ghế đã có người
+                    // SET cần ghế trống  (ktradb == true)
+                    // DEL cần ghế có người (ktradb == false)
+                    // ====================================================
                     boolean ktradb = db.querySQL(data.getPos(), data.getNum(), data.getType(), data.getColor());
-                    if (ktradb == true) {
-                        if (data.getAct().equalsIgnoreCase("SET")) {
-                            db.insertData(data.getPos(), data.getNum(), data.getType(), data.getColor(),
-                                    data.getTime());
-                        } else if (data.getAct().equalsIgnoreCase("DEL")) {
-                            db.delData(data.getPos());
-                        }
+                    if (data.getAct().equalsIgnoreCase("SET") && ktradb == true) {
+                        db.insertData(data.getPos(), data.getNum(), data.getType(), data.getColor(), data.getTime());
+                        Server4.log("Đã thêm vé ghế " + data.getPos() + " vào database.\n");
+                    } else if (data.getAct().equalsIgnoreCase("DEL") && ktradb == false) {
+                        db.delData(data.getPos());
+                        Server4.log("Đã xóa vé ghế " + data.getPos() + " khỏi database.\n");
                     }
+
                     currentCircle++;
                     hash.put(String.valueOf(currentCircle), MESSAGE);
-
                 }
             } catch (IOException e) {
             }
@@ -553,7 +566,6 @@ public class Server4 {
         // --- CHÈN WEB SERVER MINI (HIỂN THỊ LOG RA NGINX) ---
         HttpServer server = HttpServer.create(new InetSocketAddress(8080), 0);
         server.createContext("/", exchange -> {
-            // Giao diện web hiển thị log, tự động làm mới sau mỗi 2 giây
             String response = "<html><head><meta charset='UTF-8'><meta http-equiv='refresh' content='2'></head>"
                     + "<body style='background:#1e1e1e; color:#00ff00; font-family:monospace; padding:20px;'>"
                     + "<h2>MÁY CHỦ 4 - RẠP PHIM (Chạy trên Google Cloud)</h2>"
