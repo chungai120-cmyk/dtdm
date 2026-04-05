@@ -80,7 +80,7 @@ public class Server3 {
                     MESSAGE = message;
                     String jeton;
                     
-                    Server3.log("Thông tin nhận được :\n" + "start: " + st + "\n" + "jeton: " + je + "\n"
+                    Server3.log("Thông nhận được :\n" + "start: " + st + "\n" + "jeton: " + je + "\n"
                             + "lamport: " + lamport + "\n" + "servername: " + name + "\n"
                             + "type: " + type + "\n" + "action: " + action + "\n" + "vòng đk: " + circle + "\n"
                             + "thông điệp: " + message + "\n");
@@ -375,6 +375,13 @@ public class Server3 {
                             if (tam < 0) {
                                 tam = 2;
                             }
+                            if (t.charAt(tam) == '0') {
+                                Server3.log("\nServer" + (tam + 1) + " bị sự cố do jeton nhận được là: " + t + ".\n\n");
+                                tam--;
+                            }
+                            if (tam < 0) {
+                                tam = 2;
+                            }
                             Connect co = new Connect(rount.table[tam].destination, rount.table[tam].port,
                                     rount.table[tam].name);
                             co.connect();
@@ -419,18 +426,24 @@ public class Server3 {
                     
                     ProcessData data = new ProcessData(MESSAGE);
                     Database db = new Database();
+
+                    // ====================================================
+                    // SỬA LỖI: Tách điều kiện SET và DEL riêng biệt
+                    // querySQL trả về true = ghế trống, false = ghế đã có người
+                    // SET cần ghế trống  (ktradb == true)
+                    // DEL cần ghế có người (ktradb == false)
+                    // ====================================================
                     boolean ktradb = db.querySQL(data.getPos(), data.getNum(), data.getType(), data.getColor());
-                    if (ktradb == true) {
-                        if (data.getAct().equalsIgnoreCase("SET")) {
-                            db.insertData(data.getPos(), data.getNum(), data.getType(), data.getColor(),
-                                    data.getTime());
-                        } else if (data.getAct().equalsIgnoreCase("DEL")) {
-                            db.delData(data.getPos());
-                        }
+                    if (data.getAct().equalsIgnoreCase("SET") && ktradb == true) {
+                        db.insertData(data.getPos(), data.getNum(), data.getType(), data.getColor(), data.getTime());
+                        Server3.log("Đã thêm vé ghế " + data.getPos() + " vào database.\n");
+                    } else if (data.getAct().equalsIgnoreCase("DEL") && ktradb == false) {
+                        db.delData(data.getPos());
+                        Server3.log("Đã xóa vé ghế " + data.getPos() + " khỏi database.\n");
                     }
+
                     currentCircle++;
                     hash.put(String.valueOf(currentCircle), MESSAGE);
-
                 }
             } catch (IOException e) {
             }
@@ -551,11 +564,12 @@ public class Server3 {
 
     public static void main(String args[]) throws Exception {
         // --- CHÈN WEB SERVER MINI (HIỂN THỊ LOG RA NGINX) ---
-        HttpServer server = HttpServer.create(new InetSocketAddress(8080), 0);
+        // Đổi port web thành 8081 để tránh trùng với Server 2 (nếu test chung 1 máy)
+        HttpServer server = HttpServer.create(new InetSocketAddress(8081), 0);
         server.createContext("/", exchange -> {
-            // Giao diện web hiển thị log, tự động làm mới sau mỗi 2 giây
+            // Đổi màu text thành màu vàng (#ffcc00) để dễ phân biệt với Server 2
             String response = "<html><head><meta charset='UTF-8'><meta http-equiv='refresh' content='2'></head>"
-                    + "<body style='background:#1e1e1e; color:#00ff00; font-family:monospace; padding:20px;'>"
+                    + "<body style='background:#1e1e1e; color:#ffcc00; font-family:monospace; padding:20px;'>"
                     + "<h2>MÁY CHỦ 3 - RẠP PHIM (Chạy trên Google Cloud)</h2>"
                     + "<div style='border:1px solid #444; padding:15px; height:80vh; overflow-y:auto;'>" 
                     + webLogs.toString() + "</div>"
@@ -571,7 +585,7 @@ public class Server3 {
         server.start();
         
         Server3.log("--- Hệ thống Server 3 đã sẵn sàng ---\n");
-        Server3.log("Web Monitor đang chạy tại cổng 8080...\n");
+        Server3.log("Web Monitor đang chạy tại cổng 8081...\n");
 
         // --- KHỞI CHẠY LOGIC SOCKET (Jeton) ---
         sv3 sv3s = new sv3();
