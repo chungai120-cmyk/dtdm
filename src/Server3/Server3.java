@@ -427,19 +427,18 @@ public class Server3 {
                     ProcessData data = new ProcessData(MESSAGE);
                     Database db = new Database();
 
+                    // Validation đã được thực hiện tại start==0 trong runServer()
+                    // Ở đây chỉ cần thực thi theo lệnh — KHÔNG check ktradb nữa
+                    // vì DB mỗi server có thể không đồng nhất → SET/DEL bị bỏ qua
                     // ====================================================
-                    // SỬA LỖI: Tách điều kiện SET và DEL riêng biệt
-                    // querySQL trả về true = ghế trống, false = ghế đã có người
-                    // SET cần ghế trống  (ktradb == true)
-                    // DEL cần ghế có người (ktradb == false)
-                    // ====================================================
-                    boolean ktradb = db.querySQL(data.getPos(), data.getNum(), data.getType(), data.getColor());
-                    if (data.getAct().equalsIgnoreCase("SET") && ktradb == true) {
+                    if (data.getAct().equalsIgnoreCase("SET")) {
                         db.insertData(data.getPos(), data.getNum(), data.getType(), data.getColor(), data.getTime());
-                        Server3.log("Đã thêm vé ghế " + data.getPos() + " vào database.\n");
-                    } else if (data.getAct().equalsIgnoreCase("DEL") && ktradb == false) {
+                        Server3.log("Đã thêm vé ghế " + data.getPos() + " vào database.
+");
+                    } else if (data.getAct().equalsIgnoreCase("DEL")) {
                         db.delData(data.getPos());
-                        Server3.log("Đã xóa vé ghế " + data.getPos() + " khỏi database.\n");
+                        Server3.log("Đã xóa vé ghế " + data.getPos() + " khỏi database.
+");
                     }
 
                     currentCircle++;
