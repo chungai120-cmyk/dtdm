@@ -433,12 +433,10 @@ public class Server3 {
                     // ====================================================
                     if (data.getAct().equalsIgnoreCase("SET")) {
                         db.insertData(data.getPos(), data.getNum(), data.getType(), data.getColor(), data.getTime());
-                        Server3.log("Đã thêm vé ghế " + data.getPos() + " vào database.
-");
+                        Server3.log("Đã thêm vé ghế " + data.getPos() + " vào database.");
                     } else if (data.getAct().equalsIgnoreCase("DEL")) {
                         db.delData(data.getPos());
-                        Server3.log("Đã xóa vé ghế " + data.getPos() + " khỏi database.
-");
+                        Server3.log("Đã xóa vé ghế " + data.getPos() + " khỏi database.");
                     }
 
                     currentCircle++;
