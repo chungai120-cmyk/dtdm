@@ -1,11 +1,11 @@
-package Server1; // Khai báo đúng gói Server1
+package Server4; // Khai báo đúng gói Server4
 
 import com.sun.net.httpserver.HttpServer;
 import java.io.*;
 import java.net.*;
 import java.util.Hashtable;
 
-public class Server1 {
+public class Server4 {
 
     // Thay thế JTextArea bằng StringBuffer để chứa Log đưa lên Web
     public static StringBuffer webLogs = new StringBuffer();
@@ -16,7 +16,7 @@ public class Server1 {
         webLogs.append(msg.replace("\n", "<br>")); // Lưu vào biến web để HTML đọc được
     }
 
-    public static class sv1 implements Runnable {
+    public static class sv4 implements Runnable {
 
         int counter;
         ObjectOutputStream output;
@@ -36,8 +36,8 @@ public class Server1 {
         ProcessData data, dt;
         int lamportSave;
 
-        sv1() {
-            new Thread(this, "sv1").start();
+        sv4() {
+            new Thread(this, "sv4").start();
         }
 
         public void handler(Socket newSocket, String serverName, int pos, int curr, Hashtable hash) {
@@ -54,7 +54,7 @@ public class Server1 {
             try {
                 String destName = client.getInetAddress().getHostName();
                 int destPort = client.getPort();
-                Server1.log("Chấp nhận kết nối từ " + destName + " tại cổng " + destPort + ".\n");
+                Server4.log("Chấp nhận kết nối từ " + destName + " tại cổng " + destPort + ".\n");
                 
                 BufferedReader inStream = new BufferedReader(new InputStreamReader(client.getInputStream()));
                 OutputStream outStream = client.getOutputStream();
@@ -65,7 +65,7 @@ public class Server1 {
                     // lay goi tin nhan duoc
                     String inLine = inStream.readLine();
                     if (inLine != null) {
-                        Server1.log("Nhận raw: " + inLine + "\n");
+                        Server4.log("Nhận raw: " + inLine + "\n");
                     }
                     MessageProcess re = new MessageProcess(inLine);
 
@@ -80,7 +80,7 @@ public class Server1 {
                     MESSAGE = message;
                     String jeton;
                     
-                    Server1.log("Thông nhận được :\n" + "start: " + st + "\n" + "jeton: " + je + "\n"
+                    Server4.log("Thông nhận được :\n" + "start: " + st + "\n" + "jeton: " + je + "\n"
                             + "lamport: " + lamport + "\n" + "servername: " + name + "\n"
                             + "type: " + type + "\n" + "action: " + action + "\n" + "vòng đk: " + circle + "\n"
                             + "thông điệp: " + message + "\n");
@@ -142,13 +142,13 @@ public class Server1 {
 
                     // xu ly thong tin Synchronymed va ket thuc vong tron ao
                     if (type.equals("Synchronymed") && (start == 4)) {
-                        Server1.log("Hoàn tất giao dịch đặt vé. Kết thúc vòng tròn ảo.\n\n");
+                        Server4.log("Hoàn tất giao dịch đặt vé. Kết thúc vòng tròn ảo.\n\n");
                     }
 
                     // xu ly thong tin updated va quay vong
                     if (type.equals("Updated") && (start == 4)) {
                         int stt = start;
-                        Server1.log("Kết thúc quá trình cập nhật, kiểm tra đồng bộ hóa TT và Quay vòng ngược.\n\n");
+                        Server4.log("Kết thúc quá trình cập nhật, kiểm tra đồng bộ hóa TT và Quay vòng ngược.\n\n");
                         stt = 1;
                         act += 1;
                         try {
@@ -157,7 +157,7 @@ public class Server1 {
                                 tam = 2;
                             }
                             if (t.charAt(tam) == '0') {
-                                Server1.log("\nServer" + (tam + 1) + " bị sự cố do jeton nhận được là: " + t + ".\n");
+                                Server4.log("\nServer" + (tam + 1) + " bị sự cố do jeton nhận được là: " + t + ".\n");
                                 tam--;
                             }
                             if (tam < 0) {
@@ -178,7 +178,7 @@ public class Server1 {
                     // xu ly thong tin temped va quay vong
                     if (type.equals("Temped") && (start == 4)) {
                         int stt = start;
-                        Server1.log("Kết thúc tạo bảng tạm, cập nhật CSDL chính Quay vòng ngược.\n\n");
+                        Server4.log("Kết thúc tạo bảng tạm, cập nhật CSDL chính Quay vòng ngược.\n\n");
                         stt = 1;
                         act += 1;
                         try {
@@ -190,7 +190,7 @@ public class Server1 {
                             co.shutdown();
                         } // bi su co
                         catch (Exception ex) {
-                            Server1.log("\n" + rount.table[vt].name + ": bị sự cố, hiện không liên lạc được.\n\n");
+                            Server4.log("\n" + rount.table[vt].name + ": bị sự cố, hiện không liên lạc được.\n\n");
                             vt++;
                             if (vt > rount.max - 1) {
                                 vt = 0;
@@ -208,7 +208,7 @@ public class Server1 {
                     // quay vong nguoc lai cua thong diep locked
                     if (type.equals("Locked") && (start == 4)) {
                         int stt = start;
-                        Server1.log("Kết thúc khóa trường dữ liệu, tạo bảng tạm và Quay vòng ngược.\n\n");
+                        Server4.log("Kết thúc khóa trường dữ liệu, tạo bảng tạm và Quay vòng ngược.\n\n");
                         stt = 1;
                         act += 1;
                         try {
@@ -217,7 +217,7 @@ public class Server1 {
                                 tam = 2;
                             }
                             if (t.charAt(tam) == '0') {
-                                Server1.log("\nServer" + (tam + 1) + " bị sự cố do jeton nhận được là: " + t + ".\n\n");
+                                Server4.log("\nServer" + (tam + 1) + " bị sự cố do jeton nhận được là: " + t + ".\n\n");
                                 tam--;
                             }
                             if (tam < 0) {
@@ -256,8 +256,8 @@ public class Server1 {
 
                         PrintWriter writer = new PrintWriter(new OutputStreamWriter(outStream, "UTF-8"), true);
                         writer.println(replyMessage);
-                        Server1.log("Reply: " + replyMessage + "\n");
-                        Server1.log("Thực hiện khóa trường DL. Chuyển thông điệp.\n\n");
+                        Server4.log("Reply: " + replyMessage + "\n");
+                        Server4.log("Thực hiện khóa trường DL. Chuyển thông điệp.\n\n");
                         try {
                             Connect co = new Connect(rount.table[vt].destination, rount.table[vt].port,
                                     rount.table[vt].name);
@@ -267,7 +267,7 @@ public class Server1 {
                             co.shutdown();
                         } // bi su co
                         catch (Exception ex) {
-                            Server1.log("\n" + rount.table[vt].name + ": bị sự cố, hiện không liên lạc được.\n\n");
+                            Server4.log("\n" + rount.table[vt].name + ": bị sự cố, hiện không liên lạc được.\n\n");
                             vt++;
                             if (vt > rount.max - 1) {
                                 vt = 0;
@@ -284,7 +284,7 @@ public class Server1 {
 
                     // xu ly thong tin locked
                     if (type.equals("Locked") && (start != 4)) {
-                        Server1.log("Chuyển thông điệp, thực hiện khóa trường DL.\n\n");
+                        Server4.log("Chuyển thông điệp, thực hiện khóa trường DL.\n\n");
                         start++;
                         try {
                             Connect co = new Connect(rount.table[vt].destination, rount.table[vt].port,
@@ -295,7 +295,7 @@ public class Server1 {
                             co.shutdown();
                         } // bi su co
                         catch (Exception ex) {
-                            Server1.log("\n" + rount.table[vt].name + ": bị sự cố, hiện không liên lạc được.\n\n");
+                            Server4.log("\n" + rount.table[vt].name + ": bị sự cố, hiện không liên lạc được.\n\n");
                             vt++;
                             if (vt > rount.max - 1) {
                                 vt = 0;
@@ -312,7 +312,7 @@ public class Server1 {
 
                     // Xu ly thong diep temp
                     if (type.equals("Temped") && (start != 4)) {
-                        Server1.log("Chuyển thông điệp, thực hiện tạo bảng tạm CSDL.\n\n");
+                        Server4.log("Chuyển thông điệp, thực hiện tạo bảng tạm CSDL.\n\n");
                         start++;
                         try {
                             int tam = pos - 2;
@@ -320,7 +320,7 @@ public class Server1 {
                                 tam = 2;
                             }
                             if (t.charAt(tam) == '0') {
-                                Server1.log("\nServer" + (tam + 1) + " bị sự cố do jeton nhận được là: " + t + ".\n\n");
+                                Server4.log("\nServer" + (tam + 1) + " bị sự cố do jeton nhận được là: " + t + ".\n\n");
                                 tam--;
                             }
                             if (tam < 0) {
@@ -340,7 +340,7 @@ public class Server1 {
 
                     // xu ly thong tin update
                     if (type.equals("Updated") && (start != 4)) {
-                        Server1.log("Chuyển thông điệp, thực hiện cập nhật bảng chính CSDL.\n\n");
+                        Server4.log("Chuyển thông điệp, thực hiện cập nhật bảng chính CSDL.\n\n");
                         start++;
                         try {
                             Connect co = new Connect(rount.table[vt].destination, rount.table[vt].port,
@@ -351,7 +351,7 @@ public class Server1 {
                             co.shutdown();
                         } // bi su co
                         catch (Exception ex) {
-                            Server1.log("\n" + rount.table[vt].name + ": bị sự cố, hiện không liên lạc được.\n\n");
+                            Server4.log("\n" + rount.table[vt].name + ": bị sự cố, hiện không liên lạc được.\n\n");
                             vt++;
                             if (vt > rount.max - 1) {
                                 vt = 0;
@@ -368,7 +368,7 @@ public class Server1 {
 
                     // Xu ly thong diep synchronym
                     if (type.equals("Synchronymed") && (start != 4)) {
-                        Server1.log("Chuyển thông điệp, kiểm tra quá trình đồng bộ hóa các tiến trình.\n\n");
+                        Server4.log("Chuyển thông điệp, kiểm tra quá trình đồng bộ hóa các tiến trình.\n\n");
                         start++;
                         try {
                             int tam = pos - 2;
@@ -376,7 +376,7 @@ public class Server1 {
                                 tam = 2;
                             }
                             if (t.charAt(tam) == '0') {
-                                Server1.log("\nServer" + (tam + 1) + " bị sự cố do jeton nhận được là: " + t + ".\n\n");
+                                Server4.log("\nServer" + (tam + 1) + " bị sự cố do jeton nhận được là: " + t + ".\n\n");
                                 tam--;
                             }
                             if (tam < 0) {
@@ -405,41 +405,40 @@ public class Server1 {
         @Override
         public void run() {
             int currentCircle = 0;
-            sv1 apps = new sv1();
+            sv4 apps = new sv4();
             Hashtable hash = new Hashtable();
 
             try {
-                // Đổi thành Server1 và Port 2001
-                GetState gs = new GetState("Server1");
+                // Đổi thành Server4 và Port 2004
+                GetState gs = new GetState("Server4");
                 gs.getCurrentCircle();
-                gs.sendUpdate("127.0.0.1", 2001, "Server1");
+                gs.sendUpdate("127.0.0.1", 2004, "Server4");
 
-                ServerSocket server = new ServerSocket(2001);
+                ServerSocket server = new ServerSocket(2004);
                 while (true) {
                     int localPort = server.getLocalPort();
-                    Server1.log("Server 1 đang lắng nghe tại cổng " + localPort + ".\n");
+                    Server4.log("Server 4 đang lắng nghe tại cổng " + localPort + ".\n");
                     Socket client = server.accept();
                     
-                    // Gắn pos = 1 cho Server 1
-                    apps.handler(client, "Server1", 1, currentCircle, hash);
+                    // Gắn pos = 4 cho Server 4
+                    apps.handler(client, "Server4", 4, currentCircle, hash);
                     apps.runServer();
                     
                     ProcessData data = new ProcessData(MESSAGE);
                     Database db = new Database();
 
+                    // Validation đã được thực hiện tại start==0 trong runServer()
+                    // Ở đây chỉ cần thực thi theo lệnh — KHÔNG check ktradb nữa
+                    // vì DB mỗi server có thể không đồng nhất → SET/DEL bị bỏ qua
                     // ====================================================
-                    // SỬA LỖI: Tách điều kiện SET và DEL riêng biệt
-                    // querySQL trả về true = ghế trống, false = ghế đã có người
-                    // SET cần ghế trống  (ktradb == true)
-                    // DEL cần ghế có người (ktradb == false)
-                    // ====================================================
-                    boolean ktradb = db.querySQL(data.getPos(), data.getNum(), data.getType(), data.getColor());
-                    if (data.getAct().equalsIgnoreCase("SET") && ktradb == true) {
+                    if (data.getAct().equalsIgnoreCase("SET")) {
                         db.insertData(data.getPos(), data.getNum(), data.getType(), data.getColor(), data.getTime());
-                        Server1.log("Đã thêm vé ghế " + data.getPos() + " vào database.\n");
-                    } else if (data.getAct().equalsIgnoreCase("DEL") && ktradb == false) {
+                        Server4.log("Đã thêm vé ghế " + data.getPos() + " vào database.
+");
+                    } else if (data.getAct().equalsIgnoreCase("DEL")) {
                         db.delData(data.getPos());
-                        Server1.log("Đã xóa vé ghế " + data.getPos() + " khỏi database.\n");
+                        Server4.log("Đã xóa vé ghế " + data.getPos() + " khỏi database.
+");
                     }
 
                     currentCircle++;
@@ -473,7 +472,7 @@ public class Server1 {
                     InetAddress add = InetAddress.getByName(address);
                     socketU.joinGroup(add);
 
-                    Server1.log("Đang chờ kết nối lấy Lamport...\n");
+                    Server4.log("Đang chờ kết nối lấy Lamport...\n");
 
                     DatagramPacket packet = new DatagramPacket(buffer1, buffer1.length);
                     socketU.receive(packet);
@@ -541,7 +540,7 @@ public class Server1 {
                             DatagramPacket pkC = new DatagramPacket(ms, ms.length, addC, portM);
                             socketU.send(pkC);
                         } catch (IOException e) {
-                            Server1.log("Lỗi: No connect to multiServer\n");
+                            Server4.log("Lỗi: No connect to multiServer\n");
                         }
                     } else if (temp.startsWith("!")) {
                         diachiSV = temp.split("-");
@@ -554,10 +553,10 @@ public class Server1 {
                     } else {
                         lp = Integer.parseInt(temp);
                     }
-                    Server1.log(temp + "\n");
+                    Server4.log(temp + "\n");
                 }
             } catch (IOException e) {
-                Server1.log("Lỗi: No connect\n");
+                Server4.log("Lỗi: No connect\n");
             }
         }
     }
@@ -568,7 +567,7 @@ public class Server1 {
         server.createContext("/", exchange -> {
             String response = "<html><head><meta charset='UTF-8'><meta http-equiv='refresh' content='2'></head>"
                     + "<body style='background:#1e1e1e; color:#00ff00; font-family:monospace; padding:20px;'>"
-                    + "<h2>MÁY CHỦ 1 - RẠP PHIM (Chạy trên Google Cloud)</h2>"
+                    + "<h2>MÁY CHỦ 4 - RẠP PHIM (Chạy trên Google Cloud)</h2>"
                     + "<div style='border:1px solid #444; padding:15px; height:80vh; overflow-y:auto;'>" 
                     + webLogs.toString() + "</div>"
                     + "</body></html>";
@@ -582,11 +581,11 @@ public class Server1 {
         });
         server.start();
         
-        Server1.log("--- Hệ thống Server 1 đã sẵn sàng ---\n");
-        Server1.log("Web Monitor đang chạy tại cổng 8080...\n");
+        Server4.log("--- Hệ thống Server 4 đã sẵn sàng ---\n");
+        Server4.log("Web Monitor đang chạy tại cổng 8080...\n");
 
         // --- KHỞI CHẠY LOGIC SOCKET (Jeton) ---
-        sv1 sv1s = new sv1();
+        sv4 sv4s = new sv4();
         // getLamports lamports = new getLamports();
     }
 }
